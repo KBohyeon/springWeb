@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import com.example.demo.answer.Answer;
+import com.example.demo.user.SiteUser;
 
 
 @Getter
@@ -27,5 +28,8 @@ public class Question {
 	private LocalDateTime createDate;
 	@OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Answer> answerList;
+	
+	@ManyToOne
+	private SiteUser author;
 	
 }

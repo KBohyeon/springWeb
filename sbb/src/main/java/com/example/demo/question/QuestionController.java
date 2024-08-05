@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.PathVariable; //id 값을 얻을 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.data.domain.Page;
 import com.example.demo.answer.AnswerForm;
+import java.security.Principal;
+import com.example.demo.user.SiteUser;
+import com.example.demo.user.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 
 @RequestMapping("/question") //url 프리픽스
 @RequiredArgsConstructor
@@ -21,11 +25,12 @@ import com.example.demo.answer.AnswerForm;
 public class QuestionController {
 
 	private final QuestionService questionService;
+	private final UserService userService;
 	@GetMapping("/list") //아래가 실행되도록 매핑해줌
 //	@ResponseBody
-	public String list(Model model) {
-		List<Question> questionList = this.questionService.getList();
-		model.addAttribute("questionList", questionList);
+	public String list(Model model, @RequestParam(value="page", defaultValue="0")int page) {
+		Page<Question> paging = this.questionService.getList(page);
+		model.addAttribute("paging", paging);
 		return "question_list"; //파일명을 말함
 	}
 	
@@ -36,18 +41,21 @@ public class QuestionController {
 		return "question_detail";
 		}
 	
+	@PreAuthorize("isAuthenticated()")
 	@GetMapping("/create")
 	public String questionCreate(QuestionForm questionForm) {
 		return "question_form";
 	}
 	
 	//매개변수의 형태가 다르면 메서드명이 같아도 됨 오버로딩
+	@PreAuthorize("isAuthenticated()")
 	@PostMapping("/create")
-	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult) {
+	public String questionCreate(@Valid QuestionForm questionForm, BindingResult bindingResult, Principal principal) {
 		if(bindingResult.hasErrors()) {
 			return "question_form";
 		}
-		this.questionService.create(questionForm.getSubject(), questionForm.getContent());
+		SiteUser siteUser = this.userService.getUser(principal.getName());
+		this.questionService.create(questionForm.getSubject(), questionForm.getContent(), siteUser);
 		return "redirect:/question/list";
 	}
 	

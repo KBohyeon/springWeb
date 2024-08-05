@@ -11,6 +11,7 @@ import com.example.demo.answer.Answer;
 import com.example.demo.answer.AnswerRepository;
 import com.example.demo.question.Question;
 import com.example.demo.question.QuestionRepository;
+import com.example.demo.question.QuestionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,17 +24,16 @@ class SbbApplicationTests {
 	@Autowired
 	private AnswerRepository answerRepository;
 	
+	@Autowired
+	private QuestionService questionService;
+	
 	@Test
 	void testJpa() {
-		Optional<Question> op = this.questionRepository.findById(2);
-		assertTrue(op.isPresent());
-		Question q = op.get();
-		
-		Answer a = new Answer();
-		a.setContent("네 자동으로 생성됩니다.");
-		a.setQuestion(q);
-		a.setCreateDate(LocalDateTime.now());
-		this.answerRepository.save(a);
+		for(int i = 1; i <= 300; i++) {
+			String subject = String.format("테스트 데이터입니다:[%03d]", i);
+			String content = "내용 없음";
+			this.questionService.create(subject, content);
+		}
 		
 	}
 
