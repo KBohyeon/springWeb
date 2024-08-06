@@ -23,7 +23,7 @@ public class QuestionService {
 	public Page<Question> getList(int page) {
 		List<Sort.Order> sorts = new ArrayList<>();
 		sorts.add(Sort.Order.desc("createDate"));
-		Pageable pageable = PageRequest.of(page, 10);
+		Pageable pageable = PageRequest.of(page, 10, Sort.by(sorts));//게시물 최신순
 		return this.questionRepository.findAll(pageable);
 	}
 	
@@ -45,5 +45,15 @@ public class QuestionService {
 		q.setAuthor(user);
 		this.questionRepository.save(q);
 	}
+	
+	public void modify(Question question, String subject, String content) {
+		question.setSubject(subject);
+		question.setContent(content);
+		question.setModifyDate(LocalDateTime.now());
+		this.questionRepository.save(question);
+	}
 
+	public void delete(Question question) {
+		this.questionRepository.delete(question);
+	}
 }

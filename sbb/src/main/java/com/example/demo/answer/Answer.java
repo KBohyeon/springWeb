@@ -14,7 +14,7 @@ import com.example.demo.user.SiteUser;
 
 import lombok.Getter;
 import lombok.Setter;
-
+//mysql 테이블 생성
 
 @Getter
 @Setter
@@ -34,4 +34,6 @@ public class Answer {
 	
 	@ManyToOne
 	private SiteUser author;
+	
+	private LocalDateTime modifyDate;
 }
